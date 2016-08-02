@@ -1,0 +1,60 @@
+package org.aolyn.concurrent;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+final class WhenAllTaskHelper {
+
+    private WhenAllTaskHelper() {
+    }
+
+    public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<T>... tasks) {
+        List<ListenableFuture<T>> immutableList = ImmutableList.copyOf(tasks);
+        return whenAll(immutableList);
+    }
+
+    /**
+     * create a Future(call it All-Future) which will complete when all the futures completed (even if any of the
+     * futures fails), if any future fail the All-Futrue will not complete until all futures completed.
+     *
+     * @param tasks
+     * @param <T>
+     * @return
+     */
+    public static <T> ListenableFuture<List<T>> whenAll(List<ListenableFuture<T>> tasks) {
+        if (tasks.size() == 0) {
+            return TaskUtils.fromResult(new ArrayList<>());
+        }
+
+        final List<ListenableFuture<T>> immutableList = ImmutableList.copyOf(tasks);
+        final AtomicInteger counter = new AtomicInteger(immutableList.size());
+        final SettableFuture<List<T>> resultTask = SettableFuture.create();
+
+        for (ListenableFuture<T> task : immutableList) {
+            task.addListener(() -> {
+                int unfinishedCount = counter.decrementAndGet();
+                if (unfinishedCount == 0) {
+                    List<T> results = new ArrayList<>();
+                    for (ListenableFuture<T> finishTask : immutableList) {
+                        try {
+                            T result = finishTask.get();
+                            results.add(result);
+                        } catch (Throwable ex) { //NOSONAR
+                            resultTask.setException(ex.getCause());
+                            return;
+                        }
+                    }
+                    resultTask.set(results);
+                }
+            }, MoreExecutors.directExecutor());
+        }
+
+        return resultTask;
+    }
+}
