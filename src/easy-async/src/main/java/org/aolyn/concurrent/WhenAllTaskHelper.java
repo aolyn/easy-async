@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Created by Chris Huang on 2016-07-22.
+ */
 final class WhenAllTaskHelper {
 
     private WhenAllTaskHelper() {
@@ -28,7 +31,7 @@ final class WhenAllTaskHelper {
      * @return
      */
     public static <T> ListenableFuture<List<T>> whenAll(List<ListenableFuture<T>> tasks) {
-        if (tasks.size() == 0) {
+        if (tasks.isEmpty()) {
             return TaskUtils.fromResult(new ArrayList<>());
         }
 

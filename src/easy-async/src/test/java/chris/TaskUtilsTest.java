@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by Chris Huang on 2017-06-03.
+ * Created by Chris Huang on 2016-07-16.
  */
 public class TaskUtilsTest {
 
@@ -327,7 +327,7 @@ public class TaskUtilsTest {
     public void whenAllTestFail2() throws Exception {
 
         ListenableFuture<Integer> f1 = TaskUtils.run(() -> {
-            Thread.sleep(100);
+            Thread.sleep(10);
             System.out.println("in ex task");
             isExceptionTaskCompleted = true;
             return 1;

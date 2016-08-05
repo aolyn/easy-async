@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by Chris Huang on 2017-06-02.
+ * Created by Chris Huang on 2016-07-16.
  */
 public class CompletableFutureTest {
 

@@ -8,12 +8,6 @@
   <artifactId>easy-async</artifactId>
   <version>1.0.0-RELEASE</version>
 
-  <parent>
-    <groupId>org.aolyn</groupId>
-    <artifactId>aolyn-library</artifactId>
-    <version>1.0.0</version>
-  </parent>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

@@ -2,20 +2,18 @@ package org.aolyn.concurrent;
 
 import java.util.concurrent.Callable;
 
-class CallableHolder<V> extends ContextRunableHolder implements Callable<V> {
+/**
+ * Created by Chris Huang on 2016-07-22.
+ */
+class CallableHolder<V> extends ContextRunnableHolder implements Callable<V> {
     private Callable<V> runnable;
 
-    public CallableHolder(Callable<V> callable) {
+    public CallableHolder(Callable<V> callable, RunnableFilter filter) {
+        super(filter);
         this.runnable = callable;
     }
 
     public V call() throws Exception {
-        beforeExecute();
-
-        try {
-            return runnable.call();
-        } finally {
-            afterExecute();
-        }
+        return process(()-> runnable.call());
     }
 }

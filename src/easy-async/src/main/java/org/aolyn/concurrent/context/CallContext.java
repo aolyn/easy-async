@@ -1,5 +1,8 @@
 package org.aolyn.concurrent.context;
 
+/**
+ * Created by Chris Huang on 2016-07-22.
+ */
 public final class CallContext {
     private static ThreadLocal<LogicalExecuteContext> contextLocal = new InheritableThreadLocal<>();
     private static Object contextInitLock = new Object();

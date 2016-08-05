@@ -3,6 +3,9 @@ package org.aolyn.concurrent.context;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Created by Chris Huang on 2016-07-22.
+ */
 public class LogicalExecuteContext {
     private String name;
     private Map<String, Object> dataItems = new HashMap<>();

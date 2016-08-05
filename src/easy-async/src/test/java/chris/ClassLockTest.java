@@ -1,5 +1,6 @@
 package chris;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.aolyn.concurrent.TaskUtils;
 import com.google.common.util.concurrent.ListenableFutureTask;
 import org.junit.Assert;
@@ -14,11 +15,11 @@ public class ClassLockTest {
 
     @Test
     public void test() throws ExecutionException, InterruptedException {
-        ListenableFutureTask task1 = TaskUtils.run(() -> {
+        ListenableFuture task1 = TaskUtils.run(() -> {
             lock1(1 * 10);
         });
 
-        ListenableFutureTask task2 = TaskUtils.run(() -> {
+        ListenableFuture task2 = TaskUtils.run(() -> {
             lock2();
         });
 
