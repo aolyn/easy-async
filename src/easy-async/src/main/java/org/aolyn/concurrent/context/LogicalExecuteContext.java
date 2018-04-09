@@ -34,4 +34,15 @@ public class LogicalExecuteContext {
     public void setName(String name) {
         this.name = name;
     }
+
+    public static LogicalExecuteContext copy(LogicalExecuteContext src) {
+        if (src == null) {
+            return null;
+        }
+
+        LogicalExecuteContext newContext = new LogicalExecuteContext();
+        newContext.name = src.name;
+        newContext.dataItems.putAll(src.dataItems);
+        return newContext;
+    }
 }

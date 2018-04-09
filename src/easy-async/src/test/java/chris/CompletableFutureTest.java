@@ -46,7 +46,7 @@ public class CompletableFutureTest {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         CompletableFuture<String> safe =
-            future.exceptionally(ex -> "We have a problem: " + ex.getMessage());
+                future.exceptionally(ex -> "We have a problem: " + ex.getMessage());
 
         CompletableFuture<Integer> safe2 = future.handle((ok, ex) -> {
             if (ok != null) {
@@ -124,7 +124,7 @@ public class CompletableFutureTest {
     //ContinueWith(WhenSuccess) - thenApply
     @Test
     public void thenApplyTest()
-        throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> "3");
 
         CompletableFuture<Integer> f2 = future.thenApply(Integer::parseInt);
@@ -137,23 +137,35 @@ public class CompletableFutureTest {
     //ContinueWith(WhenSuccess) - thenApply
     @Test
     public void thenApplyExceptionTest()
-        throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
             /*throw new Exception("test exception");*/
-            return "3";
+            return "3AS";
         });
 
-        CompletableFuture<Integer> f2 = future.thenApply(Integer::parseInt);
-        CompletableFuture<Double> f3 = f2.thenApply(r -> r * r * Math.PI);
-        Double result = f3.get();
+        final StringBuilder stringBuilder = new StringBuilder();
 
-        Assert.assertTrue(result.equals(3 * 3 * Math.PI));
+        CompletableFuture<Integer> f2 = future.thenApply(s -> {
+            stringBuilder.append("P|");
+            return Integer.parseInt(s);
+        });
+        CompletableFuture<Double> f3 = f2.thenApply(r -> {
+            stringBuilder.append("R|");
+            return r * r * Math.PI;
+        });
+
+        try {
+            Double result = f3.get();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        Assert.assertEquals(stringBuilder.toString(), "P|");
     }
 
     //ContinueWith(No Return Value) - thenAccept, thenRunAsync
     @Test
     public void thenAcceptTest()
-        throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> "3");
 
         future.thenRunAsync(() -> System.out.println("just output"));
@@ -168,7 +180,7 @@ public class CompletableFutureTest {
     //ContinueWith(No Return Value) - thenAccept, thenRunAsync
     @Test
     public void thenComposeTest()
-        throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
         CompletableFuture<CompletableFuture<String>> future = CompletableFuture.supplyAsync(() -> {
             CompletableFuture<String> future1 = new CompletableFuture<>();
             future1.complete("3");

@@ -9,12 +9,13 @@ import java.util.concurrent.Callable;
  * Created by Chris Huang on 2016-07-22.
  */
 class ContextRunnableHolder {
+
     private LogicalExecuteContext context;
     private LogicalExecuteContext contextBeforeRun;
     private RunnableFilter filter;
 
     protected ContextRunnableHolder(RunnableFilter filter) {
-        this.context = CallContext.getContext();
+        this.context = LogicalExecuteContext.copy(CallContext.getContext());
         this.filter = filter;
     }
 
