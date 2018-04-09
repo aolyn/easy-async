@@ -191,13 +191,13 @@ public final class TaskUtils {
         return tcs;
     }
 
-    public static <T> void waitAll(ListenableFuture<T>... tasks)
+    public static <T> void waitAll(ListenableFuture<? extends T>... tasks)
             throws ExecutionException, InterruptedException {
         ListenableFuture allTask = whenAll(tasks);
         allTask.get();
     }
 
-    public static <T> void waitAll(List<ListenableFuture<T>> tasks)
+    public static <T> void waitAll(List<ListenableFuture<? extends T>> tasks)
             throws ExecutionException, InterruptedException {
         ListenableFuture allTask = whenAll(tasks);
         allTask.get();
@@ -211,7 +211,7 @@ public final class TaskUtils {
      * @param <T>
      * @return
      */
-    public static <T> ListenableFuture<List<T>> whenAll(List<ListenableFuture<T>> tasks) {
+    public static <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
         return WhenAllTaskHelper.whenAll(tasks);
     }
 
@@ -223,7 +223,7 @@ public final class TaskUtils {
      * @param <T>
      * @return
      */
-    public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<T>... tasks) {
+    public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<? extends T>... tasks) {
         return WhenAllTaskHelper.whenAll(tasks);
     }
 }

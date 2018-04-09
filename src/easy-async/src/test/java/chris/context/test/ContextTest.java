@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 public class ContextTest {
+
     private static String testContextDataKey = "ListenableFutureTest_testContextDataKey";
 
     @Test
@@ -61,6 +62,22 @@ public class ContextTest {
         });
 
         Assert.assertEquals("hello", task2.get());
+    }
+
+    @Test
+    public void defaultExecutorTest22() throws ExecutionException, InterruptedException {
+        Object contextValue = "context1-2-3";
+        CallContext.setData(testContextDataKey, contextValue);
+
+        ListenableFuture<String> task1 = TaskUtils.run(() -> {
+            Thread.sleep(50);
+            Object context = CallContext.getData(testContextDataKey);
+            Assert.assertEquals(contextValue, context);
+
+            return "hello";
+        });
+        CallContext.clear();
+        task1.get();
     }
 
     @Test
@@ -150,3 +167,4 @@ public class ContextTest {
         }
     }
 }
+

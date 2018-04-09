@@ -17,8 +17,8 @@ final class WhenAllTaskHelper {
     private WhenAllTaskHelper() {
     }
 
-    public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<T>... tasks) {
-        List<ListenableFuture<T>> immutableList = ImmutableList.copyOf(tasks);
+    public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<? extends T>... tasks) {
+        List<ListenableFuture<? extends T>> immutableList = ImmutableList.copyOf(tasks);
         return whenAll(immutableList);
     }
 
@@ -30,21 +30,21 @@ final class WhenAllTaskHelper {
      * @param <T>
      * @return
      */
-    public static <T> ListenableFuture<List<T>> whenAll(List<ListenableFuture<T>> tasks) {
+    public static <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
         if (tasks.isEmpty()) {
             return TaskUtils.fromResult(new ArrayList<>());
         }
 
-        final List<ListenableFuture<T>> immutableList = ImmutableList.copyOf(tasks);
+        final List<ListenableFuture<? extends T>> immutableList = ImmutableList.copyOf(tasks);
         final AtomicInteger counter = new AtomicInteger(immutableList.size());
         final SettableFuture<List<T>> resultTask = SettableFuture.create();
 
-        for (ListenableFuture<T> task : immutableList) {
+        for (ListenableFuture<? extends T> task : immutableList) {
             task.addListener(() -> {
                 int unfinishedCount = counter.decrementAndGet();
                 if (unfinishedCount == 0) {
                     List<T> results = new ArrayList<>();
-                    for (ListenableFuture<T> finishTask : immutableList) {
+                    for (ListenableFuture<? extends T> finishTask : immutableList) {
                         try {
                             T result = finishTask.get();
                             results.add(result);
