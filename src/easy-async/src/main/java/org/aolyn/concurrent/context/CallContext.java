@@ -5,7 +5,7 @@ package org.aolyn.concurrent.context;
  */
 public final class CallContext {
     private static ThreadLocal<LogicalExecuteContext> contextLocal = new InheritableThreadLocal<>();
-    private static Object contextInitLock = new Object();
+    private static final Object contextInitLock = new Object();
 
     private CallContext() {
     }
@@ -42,19 +42,19 @@ public final class CallContext {
 
     /**
      * set data item to Context, if context not exist will create new one
-     * @param key
-     * @param value
+     * @param key key
+     * @param value value
      */
     public static void setData(String key, Object value) {
         LogicalExecuteContext context = getOrCreateContext();
         context.setData(key, value);
     }
 
-    public static void clear() {
-        LogicalExecuteContext context = contextLocal.get();
-        if (context != null) {
-            context.reset();
-        }
-        contextLocal.set(null);
-    }
+    //public static void clear() {
+    //    LogicalExecuteContext context = contextLocal.get();
+    //    if (context != null) {
+    //        context.reset();
+    //    }
+    //    contextLocal.set(null);
+    //}
 }
