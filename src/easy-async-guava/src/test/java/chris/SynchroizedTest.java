@@ -1,11 +1,9 @@
 package chris;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.aolyn.concurrent.TaskUtils;
-import org.junit.Test;
-
-import javax.lang.model.element.VariableElement;
 import java.util.concurrent.ExecutionException;
+import org.aolyn.concurrent.guava.TaskUtils;
+import org.junit.Test;
 
 /**
  * Created by Chris Huang on 2018-03-21.

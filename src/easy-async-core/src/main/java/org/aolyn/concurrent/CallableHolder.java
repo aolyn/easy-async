@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by Chris Huang on 2016-07-22.
  */
-class CallableHolder<V> extends ContextRunnableHolder implements Callable<V> {
+public class CallableHolder<V> extends ContextRunnableHolder implements Callable<V> {
     private Callable<V> runnable;
 
     public CallableHolder(Callable<V> callable, RunnableFilter filter) {

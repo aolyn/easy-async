@@ -1,4 +1,4 @@
-package org.aolyn.concurrent;
+package org.aolyn.concurrent.guava;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -15,6 +15,10 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.aolyn.concurrent.CallableHolder;
+import org.aolyn.concurrent.ContinueWithResult;
+import org.aolyn.concurrent.RunnableFilter;
+import org.aolyn.concurrent.RunnableHolder;
 
 /**
  * Created by Chris Huang on 2016-07-16.

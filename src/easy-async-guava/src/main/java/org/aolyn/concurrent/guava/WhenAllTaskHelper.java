@@ -1,4 +1,4 @@
-package org.aolyn.concurrent;
+package org.aolyn.concurrent.guava;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -48,7 +48,7 @@ final class WhenAllTaskHelper {
                         try {
                             T result = finishTask.get();
                             results.add(result);
-                        } catch (Throwable ex) { //NOSONAR
+                        } catch (Throwable ex) {
                             resultTask.setException(ex.getCause());
                             return;
                         }

@@ -1,4 +1,4 @@
-package org.aolyn.concurrent;
+package org.aolyn.concurrent.guava;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -6,5 +6,5 @@ import com.google.common.util.concurrent.ListenableFuture;
  * Created by Chris Huang on 2016-07-16.
  */
 public interface ContinueWithAction<I> {
-    void apply(ListenableFuture<? extends I> task) throws Exception; //NOSONAR
+    void apply(ListenableFuture<? extends I> task) throws Exception;
 }

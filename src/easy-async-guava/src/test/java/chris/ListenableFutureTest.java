@@ -1,6 +1,6 @@
 package chris;
 
-import org.aolyn.concurrent.TaskUtils;
+import org.aolyn.concurrent.guava.TaskUtils;
 import org.aolyn.concurrent.context.CallContext;
 import com.google.common.util.concurrent.*;
 import org.junit.Assert;

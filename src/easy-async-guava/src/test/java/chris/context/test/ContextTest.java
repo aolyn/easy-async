@@ -1,7 +1,7 @@
 package chris.context.test;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.aolyn.concurrent.TaskUtils;
+import org.aolyn.concurrent.guava.TaskUtils;
 import org.aolyn.concurrent.context.CallContext;
 import org.junit.Assert;
 import org.junit.Test;

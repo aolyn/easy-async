@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.util.concurrent.SettableFuture;
-import org.aolyn.concurrent.TaskUtils;
+import org.aolyn.concurrent.guava.TaskUtils;
 import org.junit.Test;
 
 public class TaskUtilsContinueWithResultTest {

@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by Chris Huang on 2016-07-22.
  */
-class ContextRunnableHolder {
+public class ContextRunnableHolder {
 
     private LogicalExecuteContext context;
     private LogicalExecuteContext contextBeforeRun;

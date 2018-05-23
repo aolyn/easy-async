@@ -1,6 +1,6 @@
 package chris;
 
-import org.aolyn.concurrent.TaskUtils;
+import org.aolyn.concurrent.guava.TaskUtils;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
