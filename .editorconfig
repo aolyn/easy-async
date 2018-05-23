@@ -1,0 +1,28 @@
+; Top-most EditorConfig file
+root = true
+
+; Unix-style newlines
+[*]
+end_of_line = CRLF
+
+; 4-column space indentation
+[*.{cs,tpl,java}]
+indent_style = space
+indent_size = 4
+
+[*.{config, tpl}]
+indent_style = space
+indent_size = 2
+
+[*.xml]
+indent_style = space
+indent_size = 2
+
+; 2-column tab indentation
+[*.js]
+indent_style = space
+indent_size = 4
+
+[*.html]
+indent_style = space
+indent_size = 4

@@ -76,7 +76,7 @@ public class ContextTest {
 
             return "hello";
         });
-        CallContext.clear();
+        //CallContext.clear();
         task1.get();
     }
 
