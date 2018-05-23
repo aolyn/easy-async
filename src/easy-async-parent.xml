@@ -10,7 +10,7 @@
 
   <modules>
     <module>easy-async-core</module>
-    <module>easy-async</module>
+    <module>easy-async-guava</module>
   </modules>
 
   <dependencies>
