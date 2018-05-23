@@ -97,7 +97,7 @@ public class ContextTest {
 
     @Test
     public void run2Test() throws ExecutionException, InterruptedException {
-        TaskUtils.setDefaultExecutor(Executors.newFixedThreadPool(1));
+        TaskUtils.getProvider().setDefaultExecutor(Executors.newFixedThreadPool(1));
 
         for (int i = 0; i < 9; i++) {
             final int loopIndex = i;
@@ -118,7 +118,7 @@ public class ContextTest {
 
     @Test
     public void runContextRemoveTest() throws ExecutionException, InterruptedException {
-        TaskUtils.setDefaultExecutor(Executors.newFixedThreadPool(2));
+        TaskUtils.getProvider().setDefaultExecutor(Executors.newFixedThreadPool(2));
         CallContext.setContext(null);
         for (int i = 0; i < 9; i++) {
             final int loopIndex = i;

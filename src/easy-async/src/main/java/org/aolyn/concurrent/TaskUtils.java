@@ -10,45 +10,17 @@ import java.util.concurrent.*;
  */
 public final class TaskUtils {
 
-    private static Executor defaultExecutor;
-    private static RunnableFilter filter;
+    private static TaskUtilsProvider provider = new TaskUtilsProvider();
 
-    static {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setDaemon(true)
-            .setNameFormat("TaskUtil-DefaultExecutor-%d")
-            .build();
+    public static TaskUtilsProvider getProvider() {
+        return provider;
+    }
 
-        defaultExecutor = new ThreadPoolExecutor(32, 1024,
-            60L, TimeUnit.SECONDS, new SynchronousQueue<>(), threadFactory);
+    public static void setProvider(TaskUtilsProvider provider) {
+        TaskUtils.provider = provider;
     }
 
     private TaskUtils() {
-    }
-
-    private static Executor getExecutor() {
-        if (defaultExecutor != null) {
-            return defaultExecutor;
-        }
-
-        return MoreExecutors.directExecutor();
-    }
-
-    /**
-     * set default executor for TaskUtils, if is null MoreExecutors.directExecutor() will be used
-     *
-     * @param executor default executor
-     */
-    public static void setDefaultExecutor(Executor executor) {
-        defaultExecutor = executor;
-    }
-
-    /**
-     *
-     * @param filter
-     */
-    public static void setFilter(RunnableFilter filter) {
-        TaskUtils.filter = filter;
     }
 
     /**
@@ -57,7 +29,7 @@ public final class TaskUtils {
      * @param runnable runnable to execute
      */
     public static void execute(Runnable runnable) {
-        getExecutor().execute(new RunnableHolder(runnable, filter));
+        provider.execute(runnable);
     }
 
     /**
@@ -66,13 +38,7 @@ public final class TaskUtils {
      * @param runnable runnable to execute
      */
     public static ListenableFuture run(Runnable runnable) {
-        Runnable runnableWrapper = new RunnableHolder(runnable, filter);
-        ListenableFutureTask<Integer> futureTask = ListenableFutureTask.create(() -> {
-            runnableWrapper.run();
-            return 0;
-        });
-        getExecutor().execute(futureTask);
-        return futureTask;
+        return provider.run(runnable);
     }
 
     /**
@@ -83,10 +49,7 @@ public final class TaskUtils {
      * @return ListenableFuture<V> with Callable's result
      */
     public static <V> ListenableFuture<V> run(Callable<V> callable) {
-        Callable<V> callableWraper = new CallableHolder<>(callable, filter);
-        ListenableFutureTask<V> future = ListenableFutureTask.create(callableWraper);
-        getExecutor().execute(future);
-        return future;
+        return provider.run(callable);
     }
 
     /**
@@ -97,7 +60,7 @@ public final class TaskUtils {
      * @return specific value in arguments
      */
     public static <V> ListenableFuture<V> fromResult(V value) {
-        return Futures.immediateFuture(value);
+        return provider.fromResult(value);
     }
 
     /**
@@ -108,9 +71,7 @@ public final class TaskUtils {
      * @return specific exception in arguments
      */
     public static <V> ListenableFuture<V> fromException(Exception exception) {
-        SettableFuture<V> task = SettableFuture.create();
-        task.setException(exception);
-        return task;
+        return provider.fromException(exception);
     }
 
     /**
@@ -120,199 +81,36 @@ public final class TaskUtils {
      * @param <I>
      * @return
      */
-    public static <I> ListenableFuture continueWith(
-        ListenableFuture<I> input,
-        ContinueWithAction<I> action) {
-        SettableFuture<Object> tcs = SettableFuture.create();
-
-        final ContinueWithAction<I> actionWraper = new ContinueWithActionHolder<>(action, filter);
-        input.addListener(() -> {
-            boolean isSetted = false;
-
-            try {
-                actionWraper.apply(input);
-                tcs.set(null);
-                isSetted = true;
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-                isSetted = true;
-            } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
-                    //todo:
-                }
-            }
-        }, getExecutor());
-
-        return tcs;
+    public static <I> ListenableFuture continueWith(ListenableFuture<I> input, ContinueWithAction<I> action) {
+        return provider.continueWith(input, action);
     }
 
-    public static <I, O> ListenableFuture<O> continueWith(
-        ListenableFuture<I> input,
+    public static <I, O> ListenableFuture<O> continueWith(ListenableFuture<I> input,
         ContinueWithFunction<I, O> function) {
-
-        SettableFuture<O> tcs = SettableFuture.create();
-        final ContinueWithFunction<I, O> actionWraper = new ContinueWithFunctionHolder<>(function, filter);
-        input.addListener(() -> {
-            boolean isSetted = false;
-
-            try {
-                O result = actionWraper.apply(input);
-                tcs.set(result);
-                isSetted = true;
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-                isSetted = true;
-            } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
-                    //todo:
-                }
-            }
-
-        }, getExecutor());
-
-        return tcs;
+        return provider.continueWith(input, function);
     }
 
     public static <I, O> ListenableFuture<O> continueWithTask(ListenableFuture<I> task,
         ContinueWithTaskFunction<I, O> getNextTaskFunc) {
-        SettableFuture<O> tcs = SettableFuture.create();
-
-        final ContinueWithTaskFunction<I, O> functionWraper =
-            new ContinueWithTaskFunctionHolder<>(getNextTaskFunc, filter);
-        continueWith(task, tsk -> {
-            try {
-                ListenableFuture<O> task3 = functionWraper.apply(tsk);
-
-                continueWith(task3, tsk2 -> {
-                    try {
-                        tcs.set(task3.get());
-                    } catch (Throwable ex) {
-                        tcs.setException(ex);
-                    }
-                });
-
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-            }
-        });
-
-        return tcs;
+        return provider.continueWithTask(task, getNextTaskFunc);
     }
 
     //continue with result functions
     public static <I> ListenableFuture continueWith(
         ListenableFuture<I> input,
         ContinueWithResultAction<I> action) {
-        SettableFuture<Object> tcs = SettableFuture.create();
-
-        final ContinueWithResultActionHolder<I> actionWraper = new ContinueWithResultActionHolder<>(action, filter);
-        input.addListener(() -> {
-            boolean isSetted = false;
-
-            Exception exception = null;
-            try {
-                input.get();
-            } catch (ExecutionException | InterruptedException | CancellationException ex) {
-                exception = ex;
-            }
-
-            ContinueWithResult result = new ContinueWithResult(exception == null, exception);
-            try {
-                actionWraper.apply(input, result);
-                tcs.set(null);
-                isSetted = true;
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-                isSetted = true;
-            } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
-                    //todo:
-                }
-            }
-        }, getExecutor());
-
-        return tcs;
+        return continueWith(input, action);
     }
 
     public static <I, O> ListenableFuture<O> continueWith(
         ListenableFuture<I> input,
         ContinueWithResultFunction<I, O> function) {
-
-        SettableFuture<O> tcs = SettableFuture.create();
-        final ContinueWithResultFunctionHolder<I, O> actionWraper = new ContinueWithResultFunctionHolder<>(function,
-            filter);
-        input.addListener(() -> {
-            boolean isSetted = false;
-
-            Exception exception = null;
-            try {
-                input.get();
-            } catch (ExecutionException | InterruptedException | CancellationException ex) {
-                exception = ex;
-            }
-
-            ContinueWithResult tskresult = new ContinueWithResult(exception == null, exception);
-
-            try {
-                O result = actionWraper.apply(input, tskresult);
-                tcs.set(result);
-                isSetted = true;
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-                isSetted = true;
-            } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
-                    //todo:
-                }
-            }
-
-        }, getExecutor());
-
-        return tcs;
+        return provider.continueWith(input, function);
     }
 
     public static <I, O> ListenableFuture<O> continueWithTask(ListenableFuture<I> task,
         ContinueWithResultTaskFunction<I, O> getNextTaskFunc) {
-        SettableFuture<O> tcs = SettableFuture.create();
-
-        final ContinueWithResultTaskFunction<I, O> functionWraper = new ContinueWithResultTaskFunctionHolder<>(
-            getNextTaskFunc, filter);
-        //CallContext.setData(ContinueWithSpanSwitchSetter.LOG_SPAN_SWITCHER_NAME, false);
-        continueWith(task, tsk -> {
-            try {
-
-                Exception exception = null;
-                try {
-                    task.get();
-                } catch (ExecutionException | InterruptedException | CancellationException ex) {
-                    exception = ex;
-                }
-
-                ContinueWithResult tskresult = new ContinueWithResult(exception == null, exception);
-
-                ListenableFuture<O> task3 = functionWraper.apply(tsk, tskresult);
-
-                //CallContext.setData(ContinueWithSpanSwitchSetter.LOG_SPAN_SWITCHER_NAME, false);
-                continueWith(task3, tsk2 -> {
-                    try {
-                        tcs.set(task3.get());
-                    } catch (Throwable ex) {
-                        tcs.setException(ex);
-                    }
-                });
-                //CallContext.setData(ContinueWithSpanSwitchSetter.LOG_SPAN_SWITCHER_NAME, null);
-
-            } catch (Throwable ex) {
-                tcs.setException(ex);
-            }
-        });
-        //CallContext.setData(ContinueWithSpanSwitchSetter.LOG_SPAN_SWITCHER_NAME, null);
-
-        return tcs;
+        return provider.continueWithTask(task, getNextTaskFunc);
     }
 
     public static <T> void waitAll(ListenableFuture<? extends T>... tasks)
@@ -323,8 +121,7 @@ public final class TaskUtils {
 
     public static <T> void waitAll(List<ListenableFuture<? extends T>> tasks)
         throws ExecutionException, InterruptedException {
-        ListenableFuture allTask = whenAll(tasks);
-        allTask.get();
+        provider.waitAll(tasks);
     }
 
     /**
@@ -332,7 +129,7 @@ public final class TaskUtils {
      * All-Futrue will not complete until all futures completed.
      */
     public static <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
-        return WhenAllTaskHelper.whenAll(tasks);
+        return provider.whenAll(tasks);
     }
 
     /**
@@ -340,6 +137,6 @@ public final class TaskUtils {
      * All-Futrue will not complete until all futures completed.
      */
     public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<? extends T>... tasks) {
-        return WhenAllTaskHelper.whenAll(tasks);
+        return provider.whenAll(tasks);
     }
 }
