@@ -57,7 +57,7 @@ public final class TaskUtilsProvider {
 
     /**
      *
-     * @param filter
+     * @param filter filter
      */
     public void setFilter(RunnableFilter filter) {
         this.filter = filter;
@@ -90,10 +90,9 @@ public final class TaskUtilsProvider {
 
     /**
      * execute a Callable with return value by default executor
-     *
      * @param callable callable to execute
      * @param <V> return class of callable
-     * @return ListenableFuture<V> with Callable's result
+     * @return ListenableFuture of V with Callable's result
      */
     public <V> ListenableFuture<V> run(Callable<V> callable) {
         Callable<V> callableWraper = new CallableHolder<>(callable, filter);
