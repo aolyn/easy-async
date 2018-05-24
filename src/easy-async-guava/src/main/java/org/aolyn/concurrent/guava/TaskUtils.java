@@ -16,6 +16,10 @@ public final class TaskUtils {
         return provider;
     }
 
+    /**
+     * set provider
+     * @param provider provider to set to
+     */
     public static void setProvider(TaskUtilsProvider provider) {
         TaskUtils.provider = provider;
     }
@@ -32,10 +36,10 @@ public final class TaskUtils {
         provider.execute(runnable);
     }
 
-    /**
+      /**
      * execute a runnable by default executor
-     *
      * @param runnable runnable to execute
+     * @return ListenableFuture which running runnable
      */
     public static ListenableFuture run(Runnable runnable) {
         return provider.run(runnable);
@@ -76,10 +80,10 @@ public final class TaskUtils {
 
     /**
      *
-     * @param input
-     * @param action
-     * @param <I>
-     * @return
+     * @param input input future
+     * @param action continuation action
+     * @param <I> the return type of input future
+     * @return future
      */
     public static <I> ListenableFuture continueWith(ListenableFuture<I> input, ContinueWithAction<I> action) {
         return provider.continueWith(input, action);
@@ -95,11 +99,17 @@ public final class TaskUtils {
         return provider.continueWithTask(task, getNextTaskFunc);
     }
 
-    //continue with result functions
+    /**
+     * continue with result functions
+     * @param input input future
+     * @param action continuation action
+     * @param <I> the return type of input future
+     * @return future
+     */
     public static <I> ListenableFuture continueWith(
         ListenableFuture<I> input,
         ContinueWithResultAction<I> action) {
-        return continueWith(input, action);
+        return provider.continueWith(input, action);
     }
 
     public static <I, O> ListenableFuture<O> continueWith(
@@ -108,17 +118,37 @@ public final class TaskUtils {
         return provider.continueWith(input, function);
     }
 
+    /**
+     * continue with result functions
+     * @param task input future
+     * @param getNextTaskFunc continuation function
+     * @param <I> the return type of input future
+     * @param <O> the return type of output future
+     * @return future
+     */
     public static <I, O> ListenableFuture<O> continueWithTask(ListenableFuture<I> task,
         ContinueWithResultTaskFunction<I, O> getNextTaskFunc) {
         return provider.continueWithTask(task, getNextTaskFunc);
     }
 
-    public static <T> void waitAll(ListenableFuture<? extends T>... tasks)
-        throws ExecutionException, InterruptedException {
-        ListenableFuture allTask = whenAll(tasks);
-        allTask.get();
+    /**
+     * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
+     * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     */
+    public static <T> void waitAll(ListenableFuture<? extends T>... tasks) {
+        provider.whenAll(tasks);
     }
 
+    /**
+     * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
+     * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public static <T> void waitAll(List<ListenableFuture<? extends T>> tasks)
         throws ExecutionException, InterruptedException {
         provider.waitAll(tasks);
@@ -127,6 +157,9 @@ public final class TaskUtils {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     * @return future
      */
     public static <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
         return provider.whenAll(tasks);
@@ -135,6 +168,9 @@ public final class TaskUtils {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     * @return future
      */
     public static <T> ListenableFuture<List<T>> whenAll(ListenableFuture<? extends T>... tasks) {
         return provider.whenAll(tasks);

@@ -28,7 +28,7 @@ public final class TaskUtilsProvider {
     private Executor defaultExecutor;
     private RunnableFilter filter;
 
-    {
+    public TaskUtilsProvider() {
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setDaemon(true)
             .setNameFormat("TaskUtil-DefaultExecutor-%d")
@@ -36,9 +36,6 @@ public final class TaskUtilsProvider {
 
         defaultExecutor = new ThreadPoolExecutor(32, 1024,
             60L, TimeUnit.SECONDS, new SynchronousQueue<>(), threadFactory);
-    }
-
-    public TaskUtilsProvider() {
     }
 
     private Executor getExecutor() {
@@ -79,6 +76,7 @@ public final class TaskUtilsProvider {
      * execute a runnable by default executor
      *
      * @param runnable runnable to execute
+     * @return future
      */
     public ListenableFuture run(Runnable runnable) {
         Runnable runnableWrapper = new RunnableHolder(runnable, filter);
@@ -345,6 +343,9 @@ public final class TaskUtilsProvider {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     * @return future
      */
     public <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
         return WhenAllTaskHelper.whenAll(tasks);
@@ -353,6 +354,9 @@ public final class TaskUtilsProvider {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     * @param tasks input tasks
+     * @param <T> type to return
+     * @return future
      */
     public <T> ListenableFuture<List<T>> whenAll(ListenableFuture<? extends T>... tasks) {
         return WhenAllTaskHelper.whenAll(tasks);
