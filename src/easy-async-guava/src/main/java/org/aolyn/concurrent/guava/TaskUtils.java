@@ -50,7 +50,7 @@ public final class TaskUtils {
      *
      * @param callable callable to execute
      * @param <V> return class of callable
-     * @return ListenableFuture<V> with Callable's result
+     * @return ListenableFuture of V with Callable's result
      */
     public static <V> ListenableFuture<V> run(Callable<V> callable) {
         return provider.run(callable);
