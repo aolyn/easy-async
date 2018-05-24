@@ -6,7 +6,7 @@
 
 	<groupId>org.aolyn</groupId>
 	<artifactId>easy-async-guava</artifactId>
-	<version>1.0.5-RELEASE</version>
+	<version>1.0.5-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

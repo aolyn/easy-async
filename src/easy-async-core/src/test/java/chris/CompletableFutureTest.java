@@ -1,5 +1,6 @@
 package chris;
 
+import com.google.common.util.concurrent.Futures;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +29,6 @@ public class CompletableFutureTest {
     @Test
     public void exceptionTest1() throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = new CompletableFuture<>();
-
         future.cancel(true);
 
         try {
