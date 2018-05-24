@@ -6,13 +6,34 @@
 
 	<groupId>org.aolyn</groupId>
 	<artifactId>easy-async-guava</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+  <version>0.1.0-RELEASE</version>
+
+  <name>easy async guava</name>
+  <description>common class for easy async</description>
+  <url>https://github.com/aolyn/easy-async</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Chris</name>
+      <email>chrishwang@live.cn</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git@github.com:aolyn/easy-async.git</connection>
+    <developerConnection>scm:git@github.com:aolyn/easy-async.git</developerConnection>
+    <url>git@github.com:aolyn/easy-async.git</url>
+  </scm>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.aolyn</groupId>
 			<artifactId>easy-async-core</artifactId>
-			<version>1.0.0-RELEASE</version>
+			<version>0.1.0-RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -27,32 +48,82 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<!-- Build an executable JAR -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>chris.Main</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>oss</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+          <id>oss</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+      </distributionManagement>
+
+      <build>
+        <plugins>
+          <!-- Source -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Javadoc -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Gpg Signature -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
 
 </project>
