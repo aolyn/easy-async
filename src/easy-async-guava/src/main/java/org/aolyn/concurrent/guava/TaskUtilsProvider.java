@@ -128,10 +128,10 @@ public final class TaskUtilsProvider {
 
     /**
      *
-     * @param input
-     * @param action
-     * @param <I>
-     * @return
+     * @param input input future
+     * @param action continuation action
+     * @param <I> the return type of input future
+     * @return future
      */
     public <I> ListenableFuture continueWith(
         ListenableFuture<I> input,

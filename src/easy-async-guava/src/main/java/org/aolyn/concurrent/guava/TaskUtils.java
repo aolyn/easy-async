@@ -136,6 +136,8 @@ public final class TaskUtils {
      * All-Futrue will not complete until all futures completed.
      * @param tasks input tasks
      * @param <T> type to return
+     * @throws ExecutionException ExecutionException
+     * @throws InterruptedException InterruptedException
      */
     public static <T> void waitAll(ListenableFuture<? extends T>... tasks)
         throws ExecutionException, InterruptedException {
@@ -147,8 +149,8 @@ public final class TaskUtils {
      * All-Futrue will not complete until all futures completed.
      * @param tasks input tasks
      * @param <T> type to return
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * @throws ExecutionException ExecutionException
+     * @throws InterruptedException InterruptedException
      */
     public static <T> void waitAll(List<ListenableFuture<? extends T>> tasks)
         throws ExecutionException, InterruptedException {
