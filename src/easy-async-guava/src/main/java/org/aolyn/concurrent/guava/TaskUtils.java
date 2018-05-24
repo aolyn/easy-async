@@ -137,8 +137,9 @@ public final class TaskUtils {
      * @param tasks input tasks
      * @param <T> type to return
      */
-    public static <T> void waitAll(ListenableFuture<? extends T>... tasks) {
-        provider.whenAll(tasks);
+    public static <T> void waitAll(ListenableFuture<? extends T>... tasks)
+        throws ExecutionException, InterruptedException {
+        provider.waitAll(tasks);
     }
 
     /**

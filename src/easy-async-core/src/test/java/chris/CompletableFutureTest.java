@@ -1,6 +1,5 @@
 package chris;
 
-import com.google.common.util.concurrent.Futures;
 import org.junit.Assert;
 import org.junit.Test;
 
