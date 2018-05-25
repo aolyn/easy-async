@@ -26,6 +26,7 @@ import org.aolyn.concurrent.RunnableHolder;
 public final class TaskUtilsProvider {
 
     private Executor defaultExecutor;
+    private Executor continueWithExecutor;
     private RunnableFilter filter;
 
     public TaskUtilsProvider() {
@@ -38,7 +39,26 @@ public final class TaskUtilsProvider {
             60L, TimeUnit.SECONDS, new SynchronousQueue<>(), threadFactory);
     }
 
-    private Executor getExecutor() {
+    /**
+     * get executor used for continueWith
+     * @return Executor
+     */
+    private Executor getContinueWithExecutor() {
+        return continueWithExecutor != null
+            ? continueWithExecutor
+            : getDefaultExecutor();
+    }
+
+    /**
+     * set executor for continueWith, if it's null default executor will be used
+     *
+     * @param continueWithExecutor executor used for continueWith
+     */
+    public void setContinueWithExecutor(Executor continueWithExecutor) {
+        this.continueWithExecutor = continueWithExecutor;
+    }
+
+    private Executor getDefaultExecutor() {
         if (defaultExecutor != null) {
             return defaultExecutor;
         }
@@ -47,7 +67,8 @@ public final class TaskUtilsProvider {
     }
 
     /**
-     * set default executor for TaskUtils, if is null MoreExecutors.directExecutor() will be used
+     * set default executor for TaskUtils, if is null MoreExecutors.directExecutor() will be used,
+     * if continueWithExecutor not set default executor will also be used to continueWith
      *
      * @param executor default executor
      */
@@ -56,7 +77,7 @@ public final class TaskUtilsProvider {
     }
 
     /**
-     *
+     * set filter
      * @param filter filter
      */
     public void setFilter(RunnableFilter filter) {
@@ -69,7 +90,7 @@ public final class TaskUtilsProvider {
      * @param runnable runnable to execute
      */
     public void execute(Runnable runnable) {
-        getExecutor().execute(new RunnableHolder(runnable, filter));
+        getDefaultExecutor().execute(new RunnableHolder(runnable, filter));
     }
 
     /**
@@ -84,12 +105,13 @@ public final class TaskUtilsProvider {
             runnableWrapper.run();
             return 0;
         });
-        getExecutor().execute(futureTask);
+        getDefaultExecutor().execute(futureTask);
         return futureTask;
     }
 
     /**
      * execute a Callable with return value by default executor
+     *
      * @param callable callable to execute
      * @param <V> return class of callable
      * @return ListenableFuture of V with Callable's result
@@ -97,7 +119,7 @@ public final class TaskUtilsProvider {
     public <V> ListenableFuture<V> run(Callable<V> callable) {
         Callable<V> callableWraper = new CallableHolder<>(callable, filter);
         ListenableFutureTask<V> future = ListenableFutureTask.create(callableWraper);
-        getExecutor().execute(future);
+        getDefaultExecutor().execute(future);
         return future;
     }
 
@@ -126,7 +148,7 @@ public final class TaskUtilsProvider {
     }
 
     /**
-     *
+     * continueWith
      * @param input input future
      * @param action continuation action
      * @param <I> the return type of input future
@@ -154,7 +176,7 @@ public final class TaskUtilsProvider {
                     //todo:
                 }
             }
-        }, getExecutor());
+        }, getContinueWithExecutor());
 
         return tcs;
     }
@@ -182,7 +204,7 @@ public final class TaskUtilsProvider {
                 }
             }
 
-        }, getExecutor());
+        }, getContinueWithExecutor());
 
         return tcs;
     }
@@ -244,7 +266,7 @@ public final class TaskUtilsProvider {
                     //todo:
                 }
             }
-        }, getExecutor());
+        }, getContinueWithExecutor());
 
         return tcs;
     }
@@ -282,7 +304,7 @@ public final class TaskUtilsProvider {
                 }
             }
 
-        }, getExecutor());
+        }, getContinueWithExecutor());
 
         return tcs;
     }
@@ -342,6 +364,7 @@ public final class TaskUtilsProvider {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     *
      * @param tasks input tasks
      * @param <T> type to return
      * @return future
@@ -353,6 +376,7 @@ public final class TaskUtilsProvider {
     /**
      * create a Future(call it All-Future) which will complete when all the futures completed, if any futures fail the
      * All-Futrue will not complete until all futures completed.
+     *
      * @param tasks input tasks
      * @param <T> type to return
      * @return future

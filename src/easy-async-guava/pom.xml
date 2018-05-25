@@ -6,7 +6,7 @@
 
 	<groupId>org.aolyn</groupId>
 	<artifactId>easy-async-guava</artifactId>
-  <version>0.1.0-RELEASE</version>
+  <version>0.1.1-RELEASE</version>
 
   <name>easy async guava</name>
   <description>common class for easy async</description>
