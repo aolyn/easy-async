@@ -26,9 +26,9 @@ final class WhenAllTaskHelper {
      * create a Future(call it All-Future) which will complete when all the futures completed (even if any of the
      * futures fails), if any future fail the All-Futrue will not complete until all futures completed.
      *
-     * @param tasks
-     * @param <T>
-     * @return
+     * @param tasks tasks
+     * @param <T> task result type
+     * @return task return list
      */
     public static <T> ListenableFuture<List<T>> whenAll(List<? extends ListenableFuture<? extends T>> tasks) {
         if (tasks.isEmpty()) {

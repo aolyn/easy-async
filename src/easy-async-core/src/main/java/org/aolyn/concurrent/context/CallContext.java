@@ -5,8 +5,7 @@ package org.aolyn.concurrent.context;
  */
 public final class CallContext {
 
-    private static ThreadLocal<LogicalExecuteContext> contextLocal = new InheritableThreadLocal<>();
-    private static final Object contextInitLock = new Object();
+    private final static ThreadLocal<LogicalExecuteContext> contextLocal = new ThreadLocal<>();
 
     private CallContext() {
     }
@@ -17,7 +16,7 @@ public final class CallContext {
             context = contextLocal.get();
             if (context == null) {
                 context = new LogicalExecuteContext();
-                contextLocal.set(context);
+                setContext(context);
             }
         }
         return context;
@@ -27,8 +26,14 @@ public final class CallContext {
         return contextLocal.get();
     }
 
+    /**
+     * set current thread context, after set context's threadId will set to current thread's Id
+     *
+     * @param context context to copy from
+     */
     public static void setContext(LogicalExecuteContext context) {
         contextLocal.set(context);
+        context.setThreadId(Thread.currentThread().getId());
     }
 
     public static Object getData(String key) {
@@ -36,6 +41,12 @@ public final class CallContext {
         if (context == null) {
             return null;
         }
+        // CallContext copied by InheritableThreadLocal
+        if (Thread.currentThread().getId() != context.getThreadId()) {
+            context = LogicalExecuteContext.copy(context);
+            setContext(context);
+        }
+
         return context.getData(key);
     }
 

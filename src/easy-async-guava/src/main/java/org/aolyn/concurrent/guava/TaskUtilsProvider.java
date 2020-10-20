@@ -117,8 +117,8 @@ public final class TaskUtilsProvider {
      * @return ListenableFuture of V with Callable's result
      */
     public <V> ListenableFuture<V> run(Callable<V> callable) {
-        Callable<V> callableWraper = new CallableHolder<>(callable, filter);
-        ListenableFutureTask<V> future = ListenableFutureTask.create(callableWraper);
+        Callable<V> callableWrapper = new CallableHolder<>(callable, filter);
+        ListenableFutureTask<V> future = ListenableFutureTask.create(callableWrapper);
         getDefaultExecutor().execute(future);
         return future;
     }
@@ -161,18 +161,18 @@ public final class TaskUtilsProvider {
 
         final ContinueWithAction<I> actionWraper = new ContinueWithActionHolder<>(action, filter);
         input.addListener(() -> {
-            boolean isSetted = false;
+            boolean isSet = false;
 
             try {
                 actionWraper.apply(input);
                 tcs.set(null);
-                isSetted = true;
+                isSet = true;
             } catch (Throwable ex) {
                 tcs.setException(ex);
-                isSetted = true;
+                isSet = true;
             } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
+                if (!isSet) {
+                    tcs.setException(new Exception("unknown continueWith exception"));
                     //todo:
                 }
             }
@@ -188,18 +188,18 @@ public final class TaskUtilsProvider {
         SettableFuture<O> tcs = SettableFuture.create();
         final ContinueWithFunction<I, O> actionWraper = new ContinueWithFunctionHolder<>(function, filter);
         input.addListener(() -> {
-            boolean isSetted = false;
+            boolean isSet = false;
 
             try {
                 O result = actionWraper.apply(input);
                 tcs.set(result);
-                isSetted = true;
+                isSet = true;
             } catch (Throwable ex) {
                 tcs.setException(ex);
-                isSetted = true;
+                isSet = true;
             } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
+                if (!isSet) {
+                    tcs.setException(new Exception("unknown continueWith exception"));
                     //todo:
                 }
             }
@@ -243,7 +243,7 @@ public final class TaskUtilsProvider {
 
         final ContinueWithResultActionHolder<I> actionWraper = new ContinueWithResultActionHolder<>(action, filter);
         input.addListener(() -> {
-            boolean isSetted = false;
+            boolean isSet = false;
 
             Exception exception = null;
             try {
@@ -256,13 +256,13 @@ public final class TaskUtilsProvider {
             try {
                 actionWraper.apply(input, result);
                 tcs.set(null);
-                isSetted = true;
+                isSet = true;
             } catch (Throwable ex) {
                 tcs.setException(ex);
-                isSetted = true;
+                isSet = true;
             } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
+                if (!isSet) {
+                    tcs.setException(new Exception("unknown continueWith exception"));
                     //todo:
                 }
             }
@@ -279,7 +279,7 @@ public final class TaskUtilsProvider {
         final ContinueWithResultFunctionHolder<I, O> actionWraper = new ContinueWithResultFunctionHolder<>(function,
             filter);
         input.addListener(() -> {
-            boolean isSetted = false;
+            boolean isSet = false;
 
             Exception exception = null;
             try {
@@ -293,13 +293,13 @@ public final class TaskUtilsProvider {
             try {
                 O result = actionWraper.apply(input, tskresult);
                 tcs.set(result);
-                isSetted = true;
+                isSet = true;
             } catch (Throwable ex) {
                 tcs.setException(ex);
-                isSetted = true;
+                isSet = true;
             } finally {
-                if (!isSetted) {
-                    tcs.setException(new Exception("unkown continueWith exception"));
+                if (!isSet) {
+                    tcs.setException(new Exception("unknown continueWith exception"));
                     //todo:
                 }
             }

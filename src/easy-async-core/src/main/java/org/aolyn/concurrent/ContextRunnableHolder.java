@@ -10,9 +10,10 @@ import java.util.concurrent.Callable;
  */
 public class ContextRunnableHolder {
 
-    private LogicalExecuteContext context;
+    private final LogicalExecuteContext context;
+    private final RunnableFilter filter;
+
     private LogicalExecuteContext contextBeforeRun;
-    private RunnableFilter filter;
 
     protected ContextRunnableHolder(RunnableFilter filter) {
         this.context = LogicalExecuteContext.copy(CallContext.getContext());

@@ -7,8 +7,13 @@ import java.util.Map;
  * Created by Chris Huang on 2016-07-22.
  */
 public class LogicalExecuteContext {
+
     private String name;
-    private Map<String, Object> dataItems = new HashMap<>();
+    private final Map<String, Object> dataItems = new HashMap<>();
+    private long threadId;
+
+    LogicalExecuteContext() {
+    }
 
     public Object getData(String key) {
         return dataItems.get(key);
@@ -44,5 +49,13 @@ public class LogicalExecuteContext {
         newContext.name = src.name;
         newContext.dataItems.putAll(src.dataItems);
         return newContext;
+    }
+
+    void setThreadId(long threadId) {
+        this.threadId = threadId;
+    }
+
+    long getThreadId() {
+        return this.threadId;
     }
 }

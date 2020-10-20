@@ -1,4 +1,4 @@
-package chris.context.test;
+package org.aolyn.concurrent.test.test;
 
 import org.junit.Test;
 

@@ -8,7 +8,7 @@ import org.aolyn.concurrent.RunnableFilter;
  * Created by Chris Huang on 2016-07-22.
  */
 class ContinueWithTaskFunctionHolder<I, O> extends ContextRunnableHolder implements ContinueWithTaskFunction<I, O> {
-    private ContinueWithTaskFunction<I, O> action;
+    private final ContinueWithTaskFunction<I, O> action;
 
     public ContinueWithTaskFunctionHolder(ContinueWithTaskFunction<I, O> callable, RunnableFilter filter) {
         super(filter);

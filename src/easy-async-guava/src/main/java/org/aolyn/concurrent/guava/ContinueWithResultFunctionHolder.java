@@ -7,7 +7,7 @@ import org.aolyn.concurrent.RunnableFilter;
 
 class ContinueWithResultFunctionHolder<I, O> extends ContextRunnableHolder implements ContinueWithResultFunction<I, O> {
 
-    private ContinueWithResultFunction<I, O> action;
+    private final ContinueWithResultFunction<I, O> action;
 
     public ContinueWithResultFunctionHolder(ContinueWithResultFunction<I, O> callable, RunnableFilter filter) {
         super(filter);
